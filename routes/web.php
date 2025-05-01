@@ -21,7 +21,7 @@ Route::get('/dashboard', function () {
 
 Route::controller(CategoryController::class)->group(function () {
     Route::get("categories/create", "create");
-    Route::post("categories/", "store")->name("store");
+    Route::post("categories/", "store")->name("Store");
     Route::get("categories/", "index");
     Route::get("categories/show/{id}", "show");
     Route::get("categories/edit/{id}", "edit");
