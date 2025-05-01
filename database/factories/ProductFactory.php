@@ -19,6 +19,7 @@ use App\Models\OrderItem;
 use App\Models\OrderDetail;
 use App\Models\Cart;
 use App\Models\CartItem;
+use Illuminate\Support\Str;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\=Product>
  */
@@ -31,19 +32,21 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $name = fake()->unique()->word();
         return [
-           'name' => $this->faker->word,
-        'slug' => $this->faker->slug,
-        'description' => $this->faker->text,
-        'image' => $this->faker->imageUrl(),
-        'price' => $this->faker->randomFloat(2, 10, 999),
-        'quantity' => $this->faker->numberBetween(1, 100),
-        'condition' => $this->faker->randomElement(['default', 'new', 'hot']),
-        'status' => $this->faker->boolean(),
-        'rating' => $this->faker->numberBetween(1, 5),
-        'category_id' => Category::factory(),
-        'sub_category_id' => SubCategory::factory(),
-        'brand_id' => Brand::factory(),
+            'name' => $name,
+            'slug' =>Str::slug($name),
+            'description' => fake()->paragraph(),
+            'image' => 'https://picsum.photos/seed/' . Str::random(10) . '/640/480',
+            'price' => $price = fake()->randomFloat(2, 50, 500),
+            'discount_in_percentage' => $discount = fake()->numberBetween(0, 30),
+            'total_price' => $price - ($price * $discount / 100),
+            'quantity' => fake()->numberBetween(1, 100),
+            'condition' => fake()->randomElement(['Default', 'New', 'Hot']),
+            'status' => true,
+            'category_id' => Category::factory(),
+            'sub_category_id' => SubCategory::factory(),
+            'brand_id' => Brand::factory(),
         ];
     }
 }

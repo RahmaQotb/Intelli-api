@@ -32,12 +32,12 @@ class OrderItemFactory extends Factory
     public function definition(): array
     {
         return [
+            'order_id' => Order::factory(),
             'product_id' => Product::factory(),
-        'product_name' => $this->faker->word,
-        'product_price' => $this->faker->randomFloat(2, 20, 500),
-        'brand_id' => Brand::factory(),
-        'quantity' => $this->faker->numberBetween(1, 5),
-        'order_id' => Order::factory(),
+            'product_name' => fake()->word(),
+            'product_price' => fake()->randomFloat(2, 10, 300),
+            'quantity' => fake()->numberBetween(1, 5),
+            'brand_id' => Brand::factory(),
         ];
     }
 }

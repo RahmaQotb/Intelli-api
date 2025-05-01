@@ -32,14 +32,14 @@ class OrderDetailFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name' => $this->faker->firstName,
-        'last_name' => $this->faker->lastName,
-        'email' => $this->faker->safeEmail,
-        'phone_number' => $this->faker->phoneNumber,
-        'address_one' => $this->faker->streetAddress,
-        'address_two' => $this->faker->secondaryAddress,
-        'city_id' => City::factory(),
-        'postal_code' => $this->faker->postcode,
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'email' => fake()->safeEmail(),
+            'phone_number' => fake()->phoneNumber(),
+            'address_one' => fake()->streetAddress(),
+            'address_two' => fake()->optional()->secondaryAddress(),
+            'postal_code' => fake()->postcode(),
+            'order_id' => Order::factory(),
         ];
     }
 }

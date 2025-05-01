@@ -19,6 +19,7 @@ use App\Models\OrderItem;
 use App\Models\OrderDetail;
 use App\Models\Cart;
 use App\Models\CartItem;
+use Illuminate\Support\Str;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\=SubCategory>
  */
@@ -31,13 +32,13 @@ class SubCategoryFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'name' => $this->faker->word,
-        'slug' => $this->faker->slug,
-
-        'image' => $this->faker->imageUrl(),
-        'description' => $this->faker->sentence,
-        'category_id' => Category::factory(),
-        ];
+        $name = fake()->unique()->word();
+return [
+    'name' => $name,
+    'slug' => Str::slug($name),
+    'image' => 'https://picsum.photos/seed/' . Str::random(10) . '/640/480',
+    'description' => fake()->sentence(),
+    'category_id' => Category::factory(),
+];
     }
 }

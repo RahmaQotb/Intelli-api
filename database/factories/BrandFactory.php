@@ -19,7 +19,7 @@ use App\Models\OrderItem;
 use App\Models\OrderDetail;
 use App\Models\Cart;
 use App\Models\CartItem;
-
+use Illuminate\Support\Str;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\=Brand>
  */
@@ -32,16 +32,17 @@ class BrandFactory extends Factory
      */
     public function definition(): array
     {
+        $name = fake()->unique()->company();
         return [
-            'name' => $this->faker->company,
-        'slug' => $this->faker->slug,
-        'description' => $this->faker->paragraph,
-        'logo' => $this->faker->imageUrl(),
-        'cover' => $this->faker->imageUrl(),
-        'status' => $this->faker->boolean(),
-        'organization_license' => $this->faker->imageUrl,
-        'commercial_registry_extract' => $this->faker->imageUrl,
-        'tax_registry' => $this->faker->imageUrl,
+            'name' => $name,
+            'slug' => Str::slug($name),
+            'description' => fake()->paragraph(),
+            'logo' => 'https://picsum.photos/seed/' . Str::random(10) . '/640/480',
+            'cover' =>'https://picsum.photos/seed/' . Str::random(10) . '/640/480',
+            'status' => fake()->randomElement([true,false]),
+            'organization_license' =>'https://picsum.photos/seed/' . Str::random(10) . '/640/480',
+            'commercial_registry_extract' => 'https://picsum.photos/seed/' . Str::random(10) . '/640/480',
+            'tax_registry' => 'https://picsum.photos/seed/' . Str::random(10) . '/640/480',
         ];
     }
 }

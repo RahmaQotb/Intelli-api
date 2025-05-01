@@ -19,6 +19,8 @@ use App\Models\OrderItem;
 use App\Models\OrderDetail;
 use App\Models\Cart;
 use App\Models\CartItem;
+use Illuminate\Support\Str;
+
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\=Order>
  */
@@ -32,13 +34,13 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'number' => $this->faker->unique()->numerify('ORD###'),
-        'shipping_charges' => $this->faker->randomFloat(2, 10, 100),
-        'tax' => $this->faker->randomFloat(2, 1, 20),
-        'discount' => $this->faker->randomFloat(2, 0, 30),
-        'total_price' => $this->faker->randomFloat(2, 50, 999),
-        'status' => 'pending',
-        'user_id' => User::factory(),
+            'number' => 'ORD-' . strtoupper(Str::random(10)),
+            'shipping_charges' => 20,
+            'tax' => 0,
+            'discount' => 0,
+            'total_price' => fake()->randomFloat(2, 100, 1000),
+            'status' => fake()->randomElement(['pending']),
+            'user_id' => User::factory(),
         ];
     }
 }

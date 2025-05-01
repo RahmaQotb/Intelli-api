@@ -32,12 +32,13 @@ class CartItemFactory extends Factory
     public function definition(): array
     {
         return [
+            'cart_id' => Cart::factory(),
             'product_id' => Product::factory(),
-        'product_name' => $this->faker->word,
-        'product_price' => $this->faker->randomFloat(2, 10, 100),
-        'brand_id' => Brand::factory(),
-        'quantity' => $this->faker->numberBetween(1, 10),
-        'cart_id' => Cart::factory(),
+            'product_name' => fake()->word(),
+            'product_price' => fake()->randomFloat(2, 10, 300),
+            'total_price' => fn(array $attributes) => $attributes['product_price'] * rand(1, 5),
+            'quantity' => rand(1, 5),
+            'brand_id' => Brand::factory(),
         ];
     }
 }
