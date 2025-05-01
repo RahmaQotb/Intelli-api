@@ -89,7 +89,7 @@ class CategoryController extends Controller
 
         $category->delete();
 
-        return redirect()->route('Admin.categories.index')
+        return back()
             ->with('success', 'Category deleted successfully.');
     }
 }

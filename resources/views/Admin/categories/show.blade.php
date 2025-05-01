@@ -1,53 +1,44 @@
-@extends("Admin.layout")
+@extends('Admin.layout')
+
 @section('body')
-@include("success")
+    @include('success')
 
-{{-- Category Name:{{$category->name}}<br> --}}
-{{-- Category Description:{{$category->desc}}<br> --}}
-{{-- Product Price:{{$product->price}}<br>
-Product Quantity:{{$product->quantity}}<br>
-Product Image:<br>
-<img src="{{url(asset("storage/$product->image"))}}" alt="" srcset="" > --}}
-   
-{{-- <form action="{{url("products/$product->id")}}" method="post">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="btn btn-danger">Delete</button>
-</form> --}}
-{{-- <h1> --}}
-    {{-- <a class="btn btn-success" href="{{url("products/edit/$product->id")}}" >Edit</a>   --}}
+    <div class="container mt-4">
+        <h2 class="mb-4">Category Details</h2>
 
-    <table class="table table-bordered border-success">
-        <thead>
-          <tr>
-            <th> #ID</th>
-            <th> Name</th>
-            <th>Description</th>
-                    
-          </tr>
-          </thead>
-          <tbody>
-            <tr class="table-active">
-                
-            </tr>
-            <tr class="table-active" scope="row">
-              
+        <table class="table table-bordered border-success">
+            <tr>
+                <th>ID</th>
+                <td>{{ $category->id }}</td>
             </tr>
             <tr>
-              <th scope="row">{{$category->id}}</th>
-              <td >{{$category->name}}</td>
-              <td>{{$category->description}}</td>
+                <th>Name</th>
+                <td>{{ $category->name }}</td>
             </tr>
-          </tbody>
-      </table>
-      <br>
-      <h1> 
-        <form action="{{url("admin/categories/$category->id")}}" method="post">
-          @csrf
-          @method('DELETE')
-          <button type="submit" class="btn btn-danger">Delete</button>
-      </form>
-    
-        <a class="btn btn-primary" href="{{url("admin/categories/edit/$category->id")}}" >Edit</a>  
-    
+            <tr>
+                <th>Slug</th>
+                <td>{{ $category->slug }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ $category->description ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <th>Image</th>
+                <td>
+                    @if ($category->image)
+                        <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}"
+                            >
+                    @else
+                        No image uploaded.
+                    @endif
+                </td>
+            </tr>
+            <tr>
+                <th>Created At</th>
+                <td>{{ $category->created_at }}</td>
+            </tr>
+        </table>
+
+    </div>
 @endsection

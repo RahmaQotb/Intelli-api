@@ -19,12 +19,12 @@ Route::get('/dashboard', function () {
     return view('Admin.home');
 })->name('dashboard');
 
-Route::controller(CategoryController::class)->group(function () {
-    Route::get("categories/create", "create");
-    Route::post("categories/", "store")->name("Store");
-    Route::get("categories/", "index");
-    Route::get("categories/show/{id}", "show");
-    Route::get("categories/edit/{id}", "edit");
-    Route::put("categories/{id}", "update");
-    Route::delete("categories/{id}", "delete");
+Route::controller(CategoryController::class)->prefix('categories')->group(function () {
+    Route::get("/create", "create");
+    Route::post("/", "store")->name("Store");
+    Route::get("/", "index");
+    Route::get("/show/{id}", "show")->name("show");
+    Route::get("/edit/{id}", "edit");
+    Route::put("/{id}", "update");
+    Route::delete("/{id}", "destroy")->name('destroy');
 });
