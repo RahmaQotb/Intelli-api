@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\CategoryController;
+
+use App\Http\Controllers\Dashboard\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,10 +16,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('Admin.home');
 })->name('dashboard');
 
-Route::controller(CategoryController::class)->middleware("is_super_admin")->group(function () {
+Route::controller(CategoryController::class)->group(function () {
     Route::get("categories/create", "create");
     Route::post("categories/", "store")->name("store");
     Route::get("categories/", "index");
