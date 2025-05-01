@@ -33,10 +33,11 @@ class BrandAdminFactory extends Factory
     public function definition(): array
     {
         return [
-'name' => $this->faker->name,
-        'email' => $this->faker->unique()->safeEmail,
-        'password' => bcrypt('brandadmin'),
-        'is_super_brand_admin' => $this->faker->boolean,
-        'brand_id' => Brand::factory(),        ];
+            'name' => $this->faker->name,
+            'email' => $this->faker->unique()->safeEmail,
+            'password' => bcrypt('brandadmin'),
+            'is_super_brand_admin' => $this->faker->boolean,
+            'brand_id' => Brand::factory(),
+        ];
     }
 }
