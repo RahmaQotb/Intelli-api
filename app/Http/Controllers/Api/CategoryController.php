@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function getCategories(){
         $categories = Category::with('subCategories')->get();
-
+        
         if($categories->isEmpty()){
             return response()->json([
                 "success"=>false,
