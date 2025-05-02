@@ -18,7 +18,7 @@ class ProductResource extends JsonResource
             'id'         => $this->id,
             'name'       => $this->name,
             'slug'       => $this->slug,
-            'description'=> $this->description,
+            'description' => $this->description,
             'image'      => url($this->image),
             'price'      => $this->price,
             'quantity'  => $this->quantity,
@@ -26,9 +26,9 @@ class ProductResource extends JsonResource
             'discount_in_percentage'  => $this->discount_in_percentage,
             'total_price'  => $this->total_price,
             'status'  => $this->status,
-            'brand'      => $this->relationLoaded('brand') && !($this->brand->isEmpty()) ? BrandResource::collection($this->brand) : null,
+            'brand' => $this->brand ? new BrandResource($this->brand) : null,
             'category'   =>   new CategoryResource($this->category),
-            'sub_category'=>  new SubCategoryResource($this->subCategory) ?? null ,
+            // 'sub_category' =>  new SubCategoryResource($this->subCategory) ?? null,
             'created_at' => $this->created_at->format('l, d M Y'),
         ];
     }
