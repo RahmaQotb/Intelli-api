@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
 
         // Products
         Product::factory(3)->create();
+        $this->call(RolePermissionSeeder::class);
 
         // Carts
         /*Cart::factory(10)->create()->each(function ($cart) {

@@ -19,7 +19,7 @@ Route::get('/dashboard', function () {
     return view('Admin.home');
 })->name('dashboard');
 
-Route::controller(CategoryController::class)->prefix('categories')->group(function () {
+Route::controller(CategoryController::class)->middleware('permission:manage_categories|manage_sub_categories')->prefix('categories')->group(function () {
     Route::get("/create", "create");
     Route::post("/", "store")->name("Store");
     Route::get("/", "index");
