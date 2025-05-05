@@ -1,65 +1,57 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dashboard;
 
+use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AdminController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    public function create(){
+        return view('Dashboard.Admin.add');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+    public function add(Request $request){
+        $request->validate([
+            'name'=>'required|string|max:255',
+            'email'=>'required|email|unique:users,email',
+            'password'=>'required|min:8|confirmed',
+        ]);
+
+        $admin = new User();
+        $admin->name = $request->name;
+        $admin->email = $request->email;
+        $admin->is_admin = 1;
+        $admin->password = bcrypt($request->password);
+        $admin->save();
+
+        return back()->with('success', 'Admin created successfully');
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+    public function changePasswordForm(){
+        return view('Dashboard.Admin.change-password');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Admin $admin)
-    {
-        //
-    }
+    public function changePassword(Request $request){
+        $request->validate([
+            'old_password' => ['required'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+    
+        $admin = Auth::user();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Admin $admin)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Admin $admin)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Admin $admin)
-    {
-        //
+        if (!Hash::check($request->old_password, $admin->password)) {
+            return back()->with('fails' , 'The old password is incorrect.');
+        }
+    
+        $admin->password = Hash::make($request->password);
+        $admin->save();
+    
+        return back()->with('success', 'Password changed successfully.');
     }
 }
