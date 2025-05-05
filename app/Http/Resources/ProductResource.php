@@ -26,7 +26,7 @@ class ProductResource extends JsonResource
             'discount_in_percentage'  => $this->discount_in_percentage,
             'total_price'  => $this->total_price,
             'status'  => $this->status,
-            'brand' => $this->brand ? new BrandResource($this->brand) : null,
+            'brand'      => $this->relationLoaded('brand') && !($this->brand->count() == 0) ? new BrandResource($this->brand) : null,
             'category'   =>   new CategoryResource($this->category),
             // 'sub_category' =>  new SubCategoryResource($this->subCategory) ?? null,
             'created_at' => $this->created_at->format('l, d M Y'),
