@@ -29,7 +29,7 @@ class ProductController extends Controller
     {
         $categories = Category::get();
         $sub_categories = SubCategory::get();
-        return view('Dashboard.Products.create',compact('categories','sub_categories','materials','sizes'));
+        return view('Dashboard.Products.create',compact('categories','sub_categories'));
     }
 
     /**
@@ -42,7 +42,6 @@ class ProductController extends Controller
     $validated = $request->validate([
         'name' => 'required|string|max:255|unique:products,name',
         'description' => 'nullable|string',
-        'material' => 'required|exists:materials,name',
         'quantity' => 'required|integer|min:0',
         'category_id' => 'required|exists:categories,id',
         'sub_category_id' => 'nullable|exists:sub_categories,id',
@@ -51,8 +50,6 @@ class ProductController extends Controller
         'discount_in_percentage' => 'nullable|numeric|min:1',
         'condition' => 'required|in:Default,New,Hot,Best Seller,Special Offer',
         'status' => 'required|in:active,archieved',
-        'sizes[]'=>'nullable|array',
-        'sizes.*'=>'exists:sizes,id',
     ]);
 
     $validated['slug'] = Str::slug($validated['name']);
@@ -64,10 +61,8 @@ class ProductController extends Controller
     }else{
         $validated['total_price'] = $validated['price'];
     }
+    // dd($validated);
     $product = Product::create($validated);
-    if($request->sizes){
-        $product->sizes()->attach($validated['sizes']);
-    }
 
     return back()->with('success', 'Product Added Successfully');
 }
@@ -89,7 +84,7 @@ class ProductController extends Controller
         $categories = Category::get();
         $sub_categories = SubCategory::get();
         
-        return view('Dashboard.Products.edit', compact('product', 'categories', 'sub_categories', 'materials', 'sizes', 'selectedSizes'));
+        return view('Dashboard.Products.edit', compact('product', 'categories', 'sub_categories'));
     }
 
     /**
@@ -101,7 +96,6 @@ class ProductController extends Controller
     $validated = $request->validate([
         'name' => 'required|string|max:255|unique:products,name,'.$id,
         'description' => 'nullable|string',
-        'material' => 'required|exists:materials,name',
         'quantity' => 'required|integer|min:0',
         'category_id' => 'required|exists:categories,id',
         'sub_category_id' => 'nullable|exists:sub_categories,id',
@@ -110,8 +104,6 @@ class ProductController extends Controller
         'discount_in_percentage' => 'nullable|numeric|min:1',
         'condition' => 'required|in:Default,New,Hot,Best Seller,Special Offer',
         'status' => 'required|in:active,archieved',
-        'sizes' => 'nullable|array',
-        'sizes.*' => 'exists:sizes,id',
     ]);
 
     $validated['slug'] = Str::slug($validated['name']);
@@ -134,12 +126,6 @@ class ProductController extends Controller
 
     $product->update($validated);
     
-    // Handle sizes relationship
-    if($request->has('sizes')) {
-        $product->sizes()->sync($request->sizes);
-    } else {
-        $product->sizes()->detach();
-    }
 
     return back()->with('success', 'Product Updated Successfully');
 }
