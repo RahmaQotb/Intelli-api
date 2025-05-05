@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BrandResource;
 use App\Models\Brand;
 use App\Models\BrandAdmin;
 use Illuminate\Http\Request;
@@ -104,5 +105,22 @@ class BrandController extends Controller
     public function destroy(Brand $brand)
     {
         //
+    }
+    
+    public function getAllBrands(){
+        $Brands = Brand::all();
+
+        if(!$Brands){
+            return response()->json([
+                "success"=>false,
+                "message"=>"Brands Not Exist",
+            ],404);
+        }
+      
+        return response()->json([
+            "success"=>true,
+            "message"=>"Brands Retrived Successfully",
+            "data"=> BrandResource::collection($Brands),
+    ],200);
     }
 }

@@ -75,3 +75,4 @@ Route::middleware('auth:sanctum')->prefix('order')->name('order.')->controller(O
 
 //Brand Demand
 Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
+Route::get('brands', [BrandController::class, 'getAllBrands'])->name('brands');
