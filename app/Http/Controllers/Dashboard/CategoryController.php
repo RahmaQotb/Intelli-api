@@ -6,90 +6,92 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::All();
-        return view("Admin.categories.index", compact("categories"));
+        $categories = Category::get();
+        return view('Dashboard.Categories.index',compact('categories'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
-        return view("Admin.categories.create");
+        return view('Dashboard.Categories.create');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|unique:categories,slug',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
+            "name"=> "required|string|max:255|unique:categories,name",
+            "description"=>"nullable|string",
+            "image"=>"required|image|mimes:png,jpeg,webp,jpg",
         ]);
 
-        $category = new Category($validated);
+        $validated['slug'] = Str::slug($validated['name']);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->storePublicly('category/images', 'public');
-            $category->image = $path;
-        }
+        $validated['image'] = 'Uploads/'.$request->file('image')->storePublicly('Categories','public');
 
-        $category->save();
+        Category::create($validated);
 
-        return view('Admin.categories.index')
-            ->with('success', 'Category created successfully.');
+        return back()->with('success','Category Added Successfully');
     }
 
-    public function show($id)
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
     {
         $category = Category::findOrFail($id);
-        return view("Admin.categories.show", compact("category"));
+        return view('Dashboard.Categories.edit',compact('category'));
     }
 
-    // public function edit($id)
-    // {
-    //     $category = Category::findOrFail($id);
-    //     return view("Admin.categories.edit", compact("category"));
-    // }
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request,$id)
+{
+    $Category = Category::findOrFail($id);
+    $validated = $request->validate([
+        "name" => "required|string|max:255|unique:categories,name," . $Category->id,
+        "description" => "nullable|string",
+        "image" => "nullable|image|mimes:png,jpeg,webp,jpg",
+    ]);
 
-    // public function update(Request $request, $id)
-    // {
-    //     $category = Category::findOrFail($id);
+    $validated['slug'] = Str::slug($validated['name']);
 
-    //     $validated = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'slug' => 'required|string|unique:categories,slug,'.$id,
-    //         'description' => 'nullable|string',
-    //         'image' => 'nullable|image|max:2048',
-    //     ]);
+    if ($request->hasFile('image')) {
+        if ($Category->image) {
+            Storage::disk('public')->delete(str_replace('Uploads/', '', $Category->image));
+        }
 
-    //     if ($request->hasFile('image')) {
-    //         if ($category->image) {
-    //             Storage::disk('public')->delete($category->image);
-    //         }
-    //         $path = $request->file('image')->storePublicly('category/images', 'public');
-    //         $validated['image'] = $path;
-    //     }
+        $validated['image'] = 'Uploads/' . $request->file('image')->storePublicly('Categories', 'public');
+    }
 
-    //     $category->update($validated);
+    $Category->update($validated);
 
-    //     return redirect()->route('admin.categories.index')
-    //         ->with('success', 'Category updated successfully.');
-    // }
+    return back()->with('success', 'Category Updated Successfully');
+}
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
-        $category = Category::findOrFail($id);
-
-        if ($category->image && Storage::disk('public')->exists($category->image)) {
-            Storage::disk('public')->delete($category->image);
+        $Category = Category::findOrFail($id);
+        $Category->delete();
+        if ($Category->image) {
+            Storage::disk('public')->delete(str_replace('Uploads/', '', $Category->image));
         }
-
-        $category->delete();
-
-        return back()
-            ->with('success', 'Category deleted successfully.');
+        return back()->with('success','Category Deleted Successfully');
     }
 }
