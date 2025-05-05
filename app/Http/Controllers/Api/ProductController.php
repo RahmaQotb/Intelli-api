@@ -12,7 +12,7 @@ use App\Http\Resources\ProductResource;
 class ProductController extends Controller
 {
     public function index(){
-        $products = Product::orderBy('created_at','desc')->paginate(10);
+        $products = Product::with('brand')->orderBy('created_at','desc')->paginate(10);
 
         if($products->count()== 0){
             return response()->json([
@@ -64,7 +64,7 @@ class ProductController extends Controller
             ],404);
         }
 
-        $products = $category->products()->latest()->paginate(10);
+        $products = $category->products()->with('brand')->latest()->paginate(10);
 
         if($products->count() == 0){
             return response()->json([
@@ -111,7 +111,7 @@ class ProductController extends Controller
             ],404);
         }
 
-        $products = $sub_category->products()->latest()->paginate(10);
+        $products = $sub_category->products()->with('brand')->latest()->paginate(10);
 
         if($products->count() == 0){
             return response()->json([
