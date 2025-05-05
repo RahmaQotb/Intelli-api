@@ -45,6 +45,7 @@ Route::prefix('auth')->name('auth.')->controller(ResetPassController::class)->gr
 
 Route::prefix('categories')->name('categories.')->controller(CategoryController::class)->group(function () {
     Route::get('get-categories', 'getCategories')->name('index');
+    Route::get('categories/{id}',  'getCategoryById')->name('show');
 });
 
 Route::prefix('products')->name('products.')->controller(ProductController::class)->group(function () {
