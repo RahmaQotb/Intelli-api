@@ -36,11 +36,27 @@ return [
     */
 
     'guards' => [
+
+        // default guard for users
         'web' => [
-            'driver' => 'session',
+            'driver' => 'sanctum',
             'provider' => 'users',
         ],
+
+        // session guard for admins
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
+
+        // session guard for brand admins
+        'brand_admin' => [
+            'driver' => 'session',
+            'provider' => 'brand_admins',
+        ],
     ],
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -65,11 +81,22 @@ return [
             'model' => App\Models\User::class,
         ],
 
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+
+        'brand_admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\BrandAdmin::class,
+        ],
+    ],
+
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
-    ],
+    
 
     /*
     |--------------------------------------------------------------------------

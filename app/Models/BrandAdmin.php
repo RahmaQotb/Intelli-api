@@ -4,12 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class BrandAdmin extends Model
+use Spatie\Permission\Traits\HasRoles;
+class BrandAdmin extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory,HasRoles;
 
     protected $fillable = ['name', 'email', 'password', 'is_super_brand_admin', 'brand_id'];
+
+    protected $guard_name = 'brand_admin';
 
     public function brand()
     {

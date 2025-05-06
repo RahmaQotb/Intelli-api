@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Models\Brand;
 
 class ProductController extends Controller
 {
@@ -29,7 +30,8 @@ class ProductController extends Controller
     {
         $categories = Category::get();
         $sub_categories = SubCategory::get();
-        return view('Dashboard.Products.create',compact('categories','sub_categories'));
+        $brands = Brand::get();
+        return view('Dashboard.Products.create',compact('categories','sub_categories','brands'));
     }
 
     /**
@@ -44,6 +46,7 @@ class ProductController extends Controller
         'description' => 'nullable|string',
         'quantity' => 'required|integer|min:0',
         'category_id' => 'required|exists:categories,id',
+        // 'brand_id' => 'required|exists:brands,id',
         'sub_category_id' => 'nullable|exists:sub_categories,id',
         'image' => 'required|image|mimes:jpeg,png,jpg,webp',
         'price' => 'required|numeric|min:0',
@@ -51,12 +54,13 @@ class ProductController extends Controller
         'condition' => 'required|in:Default,New,Hot,Best Seller,Special Offer',
         'status' => 'required|in:active,archieved',
     ]);
+    $validated['brand_id']=1;
 
     $validated['slug'] = Str::slug($validated['name']);
 
     $validated['image'] = 'Uploads/' . $request->file('image')->storePublicly('Products', 'public');
 
-    if($request->post('discount_in_percentage') != null){
+    if($request->filled('discount_in_percentage')){
         $validated['total_price'] = $validated['price'] - ($validated['price'] * ($validated['discount_in_percentage']/100));
     }else{
         $validated['total_price'] = $validated['price'];
@@ -83,8 +87,9 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $categories = Category::get();
         $sub_categories = SubCategory::get();
+        $brands = Brand::get();
         
-        return view('Dashboard.Products.edit', compact('product', 'categories', 'sub_categories'));
+        return view('Dashboard.Products.edit', compact('product', 'categories', 'sub_categories','brands'));
     }
 
     /**
@@ -98,6 +103,7 @@ class ProductController extends Controller
         'description' => 'nullable|string',
         'quantity' => 'required|integer|min:0',
         'category_id' => 'required|exists:categories,id',
+        // 'brand_id' => 'required|exists:brands,id',
         'sub_category_id' => 'nullable|exists:sub_categories,id',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,webp',
         'price' => 'required|numeric|min:0',
@@ -105,9 +111,10 @@ class ProductController extends Controller
         'condition' => 'required|in:Default,New,Hot,Best Seller,Special Offer',
         'status' => 'required|in:active,archieved',
     ]);
+    $validated['brand_id']=1;
+
 
     $validated['slug'] = Str::slug($validated['name']);
-
     // Handle image update
     if ($request->hasFile('image')) {
         // Delete old image

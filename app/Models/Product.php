@@ -11,7 +11,7 @@ class Product extends Model
 
     protected $fillable = [
         'name', 'slug', 'description', 'image', 'price', 'quantity',
-        'condition', 'status',/* 'rating',*/ 'category_id', 'sub_category_id', 'brand_id'
+        'condition', 'status',/* 'rating',*/ 'category_id', 'sub_category_id', 'brand_id' , 'total_price' , 'discount_in_percentage'
     ];
 
     /*public function images()
