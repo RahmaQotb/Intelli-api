@@ -20,13 +20,13 @@ class AdminController extends Controller
             'name'=>'required|string|max:255',
             'email'=>'required|email|unique:users,email',
             'password'=>'required|min:8|confirmed',
+            'is_super_admin'=>'required|boolean',
         ]);
-
-        $admin = new User();
+        $admin = new Admin();
         $admin->name = $request->name;
         $admin->email = $request->email;
-        $admin->is_admin = 1;
         $admin->password = bcrypt($request->password);
+        $admin->is_super_admin =$request->is_super_admin;
         $admin->save();
 
         return back()->with('success', 'Admin created successfully');
