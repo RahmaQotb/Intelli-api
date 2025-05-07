@@ -39,6 +39,14 @@
                                 <input type="password" autocomplete="off" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="">
                             </div>
 
+                            <div class="form-group">
+                                <label for="is_super_admin">Password Confirmation</label>
+                                <select name="is_super_admin" class="form-select" id="">
+                                    <option value="0">Admin</option>
+                                    <option value="1">Super Admin</option>
+                                </select>
+                            </div>
+
 
                         </div>
                     </div>
