@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Dashboard\BrandController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,7 +32,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->name('auth.')->controller(AuthController::class)->group(function () {
     Route::post("register", "register")->name('register');
     Route::post("login", "login")->name('login');
-    
+
     Route::middleware('auth:sanctum')->group(function () {
         Route::post("logout", "logout")->name('logout');
         Route::post('change-password',  'changePassword')->name('change-password');
@@ -76,3 +77,10 @@ Route::middleware('auth:sanctum')->prefix('order')->name('order.')->controller(O
 //Brand Demand
 Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
 Route::get('brands', [BrandController::class, 'getAllBrands'])->name('brands');
+
+
+Route::middleware('auth:sanctum')->controller(WishlistController::class)->group(function () {
+    Route::post('/wishlist',  'addToWishlist');
+    Route::delete('/wishlist',  'removeFromWishlist');
+    Route::get('/wishlist', 'getWishlist');
+});
