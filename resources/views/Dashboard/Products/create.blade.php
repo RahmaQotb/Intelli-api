@@ -54,6 +54,14 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="brand_id">Brand</label>
+                                <select name="brand_id" class="form-select" id="brand_id">
+                                    @foreach ($brands as $brand )
+                                    <option value="{{$brand->id}}">{{$brand->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="col-md-6">
 
@@ -78,8 +86,6 @@
                                     <option value="Default">Default</option>
                                     <option value="New">New</option>
                                     <option value="Hot">Hot</option>
-                                    <option value="Best Seller">Best Seller</option>
-                                    <option value="Special Offer">Special Offer</option>
                                 </select>
                             </div>
 
@@ -92,7 +98,6 @@
                             </div>
 
                                 
-                            </div>
                         </div>
                     </div>
                     <div class="d-flex mt-2 justify-content-center">

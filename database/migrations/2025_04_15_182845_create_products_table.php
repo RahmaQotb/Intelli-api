@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('total_price', 10, 2);
             $table->unsignedInteger('quantity');
             $table->enum('condition', ['Default', 'New', 'Hot'])->default('Default');
-            $table->boolean('status')->default(true);
+            $table->enum('status',['active','archieved'])->default('active');
 
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('categories')->cascadeOnDelete();

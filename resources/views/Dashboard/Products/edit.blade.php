@@ -58,6 +58,22 @@
                                 </select>
                             </div>
                             
+                            <div class="form-group">
+                                <label for="brand_id">Brand</label>
+                                <select name="brand_id" class="form-select" id="brand_id">
+                                    @foreach ($brands as $brand)
+                                        <option value="{{ $brand->id }}" {{ $product->brand_id == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="status">Status</label>
+                                <select name="status" class="form-select" id="status">
+                                    <option value="active" {{ $product->status == 'active' ? 'selected' : '' }}>active</option>
+                                    <option value="archieved" {{ $product->status == 'archieved' ? 'selected' : '' }}>archieved</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="col-md-6">
 
@@ -88,18 +104,10 @@
                                     <option value="Default" {{ $product->condition == 'Default' ? 'selected' : '' }}>Default</option>
                                     <option value="New" {{ $product->condition == 'New' ? 'selected' : '' }}>New</option>
                                     <option value="Hot" {{ $product->condition == 'Hot' ? 'selected' : '' }}>Hot</option>
-                                    <option value="Best Seller" {{ $product->condition == 'Best Seller' ? 'selected' : '' }}>Best Seller</option>
-                                    <option value="Special Offer"  {{ $product->condition == 'Special Offer' ? 'selected' : '' }}>Special Offer</option>
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <select name="status" class="form-select" id="status">
-                                    <option value="active" {{ $product->status == 'active' ? 'selected' : '' }}>active</option>
-                                    <option value="archieved" {{ $product->status == 'archieved' ? 'selected' : '' }}>archieved</option>
-                                </select>
-                            </div>
+                            
 
                             
                         </div>

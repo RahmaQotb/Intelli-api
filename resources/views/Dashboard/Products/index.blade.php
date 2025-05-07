@@ -1,3 +1,4 @@
+
 @extends('Dashboard.layouts.layouts')
 
 @section('title')
@@ -72,6 +73,7 @@
                             <th>Status</th>
                             <th>Category</th>
                             <th>Sub Category</th>
+                            <th>Brand</th>
                             <th>Image</th>
                             <th>Actions</th>
                         </tr>
@@ -101,6 +103,11 @@
                                                     -
                                                     @endif
                                                     
+                                                </td>
+                                                <td>
+                                                    <div style="display: flex; gap: 5px;">
+                                                        <span class="category-badge" style="background-color: #e0e0e0;color:black; padding: 4px 8px; border-radius: 12px; font-size: 12px;">{{e($product->brand->name)}} </span>
+                                                    </div>
                                                 </td>
                                                 <td>
                                                     <img src="{{ asset($product->image) }}" alt="Product Image" class="category-img">
