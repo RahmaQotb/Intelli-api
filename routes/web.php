@@ -1,6 +1,7 @@
 <?php
 
-
+use App\Http\Controllers\Dashboard\BrandAdminController;
+use App\Http\Controllers\Dashboard\BrandController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\SubCategoryController;
 use App\Http\Controllers\Dashboard\ProductController;
@@ -26,37 +27,41 @@ Route::get('/', function () {
     return redirect()->route('dashboard.index');
 });
 
-Route::as('dashboard.')->group(function(){
-    Route::get('/index',function(){
+Route::as('dashboard.')->group(function () {
+    Route::get('/index', function () {
         $categories = Category::count();
         $sub_categories = SubCategory::count();
         $products = Product::count();
         $model_counts = [
             "categories" => $categories,
-            "sub_categories"=>$sub_categories,
-            "products"=>$products
+            "sub_categories" => $sub_categories,
+            "products" => $products
         ];
-        return view('Dashboard.index',compact("model_counts"));
+        return view('Dashboard.index', compact("model_counts"));
     })->name('index');
 
-     // categoreis
-     Route::resource('categories', CategoryController::class)->except(['update']);
-     Route::post('categories/{category}/edit', [CategoryController::class, 'update'])->name('categories.update');
+    // categoreis
+    Route::resource('categories', CategoryController::class)->except(['update']);
+    Route::post('categories/{category}/edit', [CategoryController::class, 'update'])->name('categories.update');
 
 
-     //sub categories
-     Route::resource('sub_categories', SubCategoryController::class)->except(['update']);
-     Route::post('sub_categories/{sub_category}/edit', [SubCategoryController::class, 'update'])->name('sub_categories.update');
+    //sub categories
+    Route::resource('sub_categories', SubCategoryController::class)->except(['update']);
+    Route::post('sub_categories/{sub_category}/edit', [SubCategoryController::class, 'update'])->name('sub_categories.update');
 
 
-     //products
-     Route::resource('products', ProductController::class)/*->except(['update'])*/;
+    //products
+    Route::resource('products', ProductController::class)/*->except(['update'])*/;
 
-
-     Route::controller(AdminController::class)->as('admin.')->group(function(){
+    //Brand
+        Route::resource('brands', BrandController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
+        Route::get('brands/{brand}/admin/create', [BrandController::class, 'createAdmin'])->name('brands.admin.create');
+        Route::post('brands/{brand}/admin', [BrandController::class, 'storeAdmin'])->name('brands.admin.store');
+        
+    Route::controller(AdminController::class)->as('admin.')->group(function () {
         Route::get('add-admin', 'create')->name('create');
         Route::post('add_admin', 'add')->name('add');
         Route::get('change-password', 'changePasswordForm')->name('change_password_form');
         Route::post('change-password', 'changePassword')->name('change_password');
     });
-    });
+});

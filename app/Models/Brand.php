@@ -18,4 +18,8 @@ class Brand extends Model
     {
         return $this->hasMany(Product::class);
     }
+    public function brand_admin()
+    {
+        return $this->hasOne(BrandAdmin::class);
+    }
 }

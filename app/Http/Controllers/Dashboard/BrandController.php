@@ -3,124 +3,127 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\BrandResource;
 use App\Models\Brand;
 use App\Models\BrandAdmin;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
 
 class BrandController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of all brands.
      */
     public function index()
     {
-        //
+        return view('Dashboard.Brand.index', ['brands' => Brand::with('brand_admin')->get()]);
     }
 
+    /**
+     * Show the form for creating a new brand.
+     */
+    public function create()
+    {
+        return view('Dashboard.Brand.create');
+    }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created brand in storage.
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:brands,name',
-            'description' => 'required|string',
-            'logo' => 'required|image|mimes:png,jpeg,jpg,webp',
-            'cover' => 'required|image|mimes:png,jpeg,jpg,webp',
-            'organization_license' => 'required|image|mimes:png,jpeg,jpg,webp',
-            'commercial_registry_extract' => 'required|image|mimes:png,jpeg,jpg,webp',
-            'tax_registry' => 'required|image|mimes:png,jpeg,jpg,webp',
-            "owner_name" => "required|string|max:255",
-            "owner_email" => "required|email|max:255|string|unique:brand_admins,email",
-            "password" => ["required", "min:8", "confirmed", Password::defaults()]
+        $validated = $request->validate([
+            'brand_name' => 'required|string|unique:brands,name|max:255',
+            'description' => 'nullable|string',
+            'logo' => 'required|file|mimes:jpeg,png,jpg,svg|max:2048',
+            'cover' => 'required|file|mimes:jpeg,png,jpg,svg|max:4096',
+            'organization_license' => 'required|string',
+            'commercial_registry_extract' => 'required|string',
+            'tax_registry' => 'required|string',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                "status" => false,
-                "message" => "Validation Error",
-                "data" => $validator->errors(),
-            ], 400);
+        try {
+            $logoPath = $request->file('logo')->store('Logos', 'public');
+            $coverPath = $request->file('cover')->store('Covers', 'public');
+
+            $brand = Brand::create([
+                'name' => $validated['brand_name'],
+                'slug' => Str::slug($validated['brand_name']),
+                'description' => $validated['description'],
+                'logo' => $logoPath,
+                'cover' => $coverPath,
+                'organization_license' => encrypt($validated['organization_license']), 
+                'commercial_registry_extract' => encrypt($validated['commercial_registry_extract']),
+                'tax_registry' => encrypt($validated['tax_registry']),
+            ]);
+
+            return redirect()->route('dashboard.brands.admin.create', $brand)
+                ->with('success', 'Brand created. Please assign an admin.');
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['error' => 'Failed to upload files or save brand.']);
         }
-
-        $brand = new Brand();
-        $brand->name = $request->name;
-        $brand->slug = Str::slug($request->name);
-        $brand->description = $request->description;
-        $brand->logo = 'Uploads/' . $request->file('logo')->storePublicly('Brand/Logo', 'public');
-        $brand->cover = 'Uploads/' . $request->file('cover')->storePublicly('Brand/Cover', 'public');
-        $brand->organization_license = 'Uploads/' . $request->file('organization_license')->storePublicly('Brand/Organization_license', 'public');
-        $brand->commercial_registry_extract = 'Uploads/' . $request->file('commercial_registry_extract')->storePublicly('Brand/Commercial_registry_extract', 'public');
-        $brand->tax_registry = 'Uploads/' . $request->file('tax_registry')->storePublicly('Brand/Tax_registry', 'public');
-        $brand->save();
-
-        $brand_admin = new BrandAdmin();
-        $brand_admin->name = $request->owner_name;
-        $brand_admin->email = $request->owner_email;
-        $brand_admin->password = Hash::make($request->password);
-        $brand_admin->is_super_brand_admin = 1;
-        $brand_admin->brand_id = $brand->id;
-        $brand_admin->save();
-
-        return response()->json([
-            "status" => true,
-            "message" => "Form Submitted , Wait for Confirmation",
-            "data" => null,
-        ], 200);
     }
 
     /**
-     * Display the specified resource.
+     * Show the form for creating a brand admin.
+     */
+    public function createAdmin(Brand $brand)
+    {
+        return view('Dashboard.Brand.BrandAdmin.create', compact('brand'));
+    }
+
+    /**
+     * Store a newly created brand admin in storage.
+     */
+    public function storeAdmin(Request $request, Brand $brand)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:brand_admins,email|max:255',
+            'password' => 'required|min:6|confirmed',
+            'is_super_brand_admin' => 'nullable|boolean',
+        ]);
+
+        try {
+            DB::transaction(function () use ($validated, $brand, $request) {
+                BrandAdmin::create([
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                    'password' => Hash::make($validated['password']),
+                    'brand_id' => $brand->id,
+                    'is_super' => $request->boolean('is_super_brand_admin'),
+                ]);
+            });
+
+            return redirect()->route('dashboard.brands.show', $brand)
+                ->with('success', 'Admin assigned to brand.');
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['error' => 'Failed to assign admin.']);
+        }
+    }
+
+    /**
+     * Display the specified brand.
      */
     public function show(Brand $brand)
     {
-        //
+        $brand->load('brand_admin');
+        return view('Dashboard.Brand.show', compact('brand'));
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Brand $brand)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Brand $brand)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * Remove the specified brand from storage.
      */
     public function destroy(Brand $brand)
     {
-        //
-    }
-    
-    public function getAllBrands(){
-        $Brands = Brand::all();
-
-        if(!$Brands){
-            return response()->json([
-                "success"=>false,
-                "message"=>"Brands Not Exist",
-            ],404);
+        try {
+            $brand->delete();
+            return redirect()->route('dashboard.brands.index')
+                ->with('success', 'Brand deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Failed to delete brand.']);
         }
-      
-        return response()->json([
-            "success"=>true,
-            "message"=>"Brands Retrived Successfully",
-            "data"=> BrandResource::collection($Brands),
-    ],200);
     }
 }

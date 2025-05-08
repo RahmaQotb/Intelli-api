@@ -36,57 +36,51 @@
         </li>
 
 
-        <li
-        class="sidebar-item  has-sub">
-        <a href="#" class='sidebar-link'>
-            <i class="">
-                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-category-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 4h6v6h-6z" /><path d="M4 14h6v6h-6z" /><path d="M17 17m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M7 7m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /></svg>
-            </i>
-            <span>Categories</span>
-        </a>
-
-        <ul class="submenu ">
-
-            <li class="submenu-item  ">
-                <a href="{{route("dashboard.categories.index")}}" class="submenu-link">Show All Categories</a>
-
-            </li>
-
-            <li class="submenu-item  ">
-                <a href="{{route("dashboard.categories.create")}}" class="submenu-link">Add Category</a>
-
-            </li>
-
-        </ul>
-
-
-    </li>
-
-    <li
-    class="sidebar-item  has-sub">
-    <a href="#" class='sidebar-link'>
-        <i class="">
-            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-category-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4h6v6h-6zm10 0h6v6h-6zm-10 10h6v6h-6zm10 3h6m-3 -3v6" /></svg>
-        </i>
-        <span>Sub Categories</span>
-    </a>
-
-    <ul class="submenu ">
-
-        <li class="submenu-item  ">
-            <a href="{{route("dashboard.sub_categories.index")}}" class="submenu-link">Show All Sub Categories</a>
-
+        <li class="sidebar-item has-sub">
+            <a href="#" class='sidebar-link'>
+                <i class="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-category-2">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M14 4h6v6h-6z" />
+                        <path d="M4 14h6v6h-6z" />
+                        <path d="M17 17m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                        <path d="M7 7m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                    </svg>
+                </i>
+                <span>Categories</span>
+            </a>
+        
+            <ul class="submenu">
+                <li class="submenu-item">
+                    <a href="{{route('dashboard.categories.index')}}" class="submenu-link">Show All Categories</a>
+                </li>
+        
+                <li class="submenu-item">
+                    <a href="{{route('dashboard.categories.create')}}" class="submenu-link">Add Category</a>
+                </li>
+                <li class="submenu-item has-sub">
+                    <a href="#" class="submenu-link">
+                        <i class="">
+                            <!-- Your SVG icon -->
+                        </i>
+                        <span style="font-size: 16px; font-weight: bold;">Sub Categories</span>
+                    </a>
+                
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="{{route('dashboard.sub_categories.index')}}" class="submenu-link">Show All Sub Categories</a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="{{route('dashboard.sub_categories.create')}}" class="submenu-link">Add Sub Category</a>
+                        </li>
+                    </ul>
+                </li>
+                
+            </ul>
         </li>
-
-        <li class="submenu-item  ">
-            <a href="{{route("dashboard.sub_categories.create")}}" class="submenu-link">Add Sub Category</a>
-
-        </li>
-
-    </ul>
-
-
-</li>
+        
     <li
     class="sidebar-item  has-sub">
     <a href="#" class='sidebar-link'>
@@ -108,6 +102,32 @@
 
         </li>
 
+    </ul>
+
+
+</li>
+
+<li
+    class="sidebar-item  has-sub">
+    <a href="#" class='sidebar-link'>
+        <i class="">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-diamond"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 5h12l3 5l-8.5 9.5a.7 .7 0 0 1 -1 0l-8.5 -9.5l3 -5" /><path d="M10 12l-2 -2.2l.6 -1" /></svg>
+        </i>
+        <span>Brands</span>
+    </a>
+
+    <ul class="submenu ">
+
+        <li class="submenu-item  ">
+            <a href="{{route("dashboard.brands.index")}}" class="submenu-link">Show All Brands</a>
+
+        </li>
+
+        <li class="submenu-item  ">
+            <a href="{{route("dashboard.brands.create")}}" class="submenu-link">Add Brand </a>
+
+        </li>
+        
     </ul>
 
 
