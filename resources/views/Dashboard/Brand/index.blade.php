@@ -67,18 +67,21 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $brand->name }}</td>
-                            <td><img src="{{ asset('storage/Uploads/Logos/' . $brand->logo) }}" alt="Logo"
+                            <td><img src="{{ asset($brand->logo) }}" alt="Logo"
                                     class="brand-img"></td>
-                            <td><img src="{{ asset('storage/Uploads/Covers/' . $brand->cover) }}" alt="Cover"
+                            <td><img src="{{ asset($brand->cover) }}" alt="Cover"
                                     class="brand-img"></td>
                             <td>
                                 <span class="badge bg-{{ $brand->status ? 'success' : 'secondary' }}">
                                     {{ $brand->status ? 'Approved' : 'Pending' }}
                                 </span>
                             </td>
-                            <td>{{ $brand->organization_license }}</td>
-                            <td>{{ $brand->commercial_registry_extract }}</td>
-                            <td>{{ $brand->tax_registry }}</td>
+                            <td><img src="{{ asset($brand->organization_license) }}" alt="Logo"
+                                class="brand-img"></td>
+                            <td><img src="{{ asset($brand->commercial_registry_extract) }}" alt="Logo"
+                                class="brand-img"></td>
+                            <td><img src="{{ asset($brand->tax_registry) }}" alt="Logo"
+                                class="brand-img"></td>
                             <td>
                                 @if ($brand->admin)
                                     <span

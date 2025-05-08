@@ -24,8 +24,11 @@
                     <p><strong>Slug:</strong> {{ $brand->slug }}</p>
                     <p><strong>Description:</strong> {{ $brand->description ?? 'N/A' }}</p>
                     <p><strong>Status:</strong> {{ $brand->status ? 'Active' : 'Inactive' }}</p>
-                    <p><strong>Logo:</strong> <img src="{{ Storage::url($brand->logo) }}" alt="Logo" width="100"></p>
-                    <p><strong>Cover:</strong> <img src="{{ Storage::url($brand->cover) }}" alt="Cover" width="200"></p>
+                    <p><strong>Logo:</strong> <img src="{{ asset($brand->logo) }}" alt="Logo" width="100"></p>
+                    <p><strong>Cover:</strong> <img src="{{ asset($brand->cover) }}" alt="Cover" width="200"></p>
+                    <p><strong>Organization License:</strong> <img src="{{ asset($brand->organization_license) }}" alt="Cover" width="200"></p>
+                    <p><strong>Commercial Registry Extract:</strong> <img src="{{ asset($brand->commercial_registry_extract) }}" alt="Cover" width="200"></p>
+                    <p><strong>Tax Registry:</strong> <img src="{{ asset($brand->tax_registry) }}" alt="Cover" width="200"></p>
                 </div>
                 <div class="col-md-6">
                     <h5>Admin Info</h5>
