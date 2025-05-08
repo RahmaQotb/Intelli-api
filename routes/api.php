@@ -7,10 +7,10 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Dashboard\BrandController;
+use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -23,21 +23,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-/*Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});*/
-
-
-
 Route::prefix('auth')->name('auth.')->controller(AuthController::class)->group(function () {
     Route::post("register", "register")->name('register');
     Route::post("login", "login")->name('login');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post("logout", "logout")->name('logout');
-        Route::post('change-password',  'changePassword')->name('change-password');
+        Route::post('change-password', 'changePassword')->name('change-password');
     });
 });
+
 Route::prefix('auth')->name('auth.')->controller(ResetPassController::class)->group(function () {
     Route::post('forgot-password', 'forgotPassword')->name('forgot-password');
     Route::post('verify-reset-code', 'verifyResetCode')->name('verify-reset-code');
@@ -46,7 +41,7 @@ Route::prefix('auth')->name('auth.')->controller(ResetPassController::class)->gr
 
 Route::prefix('categories')->name('categories.')->controller(CategoryController::class)->group(function () {
     Route::get('get-categories', 'getCategories')->name('index');
-    Route::get('categories/{id}',  'getCategoryById')->name('show');
+    Route::get('categories/{id}', 'getCategoryById')->name('show');
 });
 
 Route::prefix('products')->name('products.')->controller(ProductController::class)->group(function () {
@@ -57,8 +52,6 @@ Route::prefix('products')->name('products.')->controller(ProductController::clas
     Route::get('brand/{brand_slug}', 'getProductsByBrand')->name('by-brand');
 });
 
-// Cart 
-
 Route::middleware('auth:sanctum')->prefix('cart')->name('cart.')->controller(CartController::class)->group(function () {
     Route::post('add', 'addToCart')->name('add');
     Route::post('remove', 'removeFromCart')->name('remove');
@@ -66,21 +59,23 @@ Route::middleware('auth:sanctum')->prefix('cart')->name('cart.')->controller(Car
     Route::get('/', 'getCart')->name('get');
 });
 
-
 Route::middleware('auth:sanctum')->prefix('order')->name('order.')->controller(OrderController::class)->group(function () {
-    Route::post('checkout',  'checkout')->name('checkout');
+    Route::post('checkout', 'checkout')->name('checkout');
     Route::get('orders/{order}', 'show')->name('show');
     Route::get('orders', 'index')->name('index');
     Route::post('orders/{order}/cancel', 'cancel');
 });
 
-//Brand Demand
 Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
 Route::get('brands', [BrandController::class, 'getAllBrands'])->name('brands');
 
-
 Route::middleware('auth:sanctum')->controller(WishlistController::class)->group(function () {
-    Route::post('/wishlist',  'addToWishlist');
-    Route::delete('/wishlist',  'removeFromWishlist');
+    Route::post('/wishlist', 'addToWishlist');
+    Route::delete('/wishlist', 'removeFromWishlist');
     Route::get('/wishlist', 'getWishlist');
+});
+
+Route::prefix('recommend')->group(function () {
+    Route::get('/search', [RecommendationController::class, 'search']);
+    Route::get('/similar/{id}', [RecommendationController::class, 'similar']);
 });
