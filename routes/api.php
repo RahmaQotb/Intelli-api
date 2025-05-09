@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\ResetPassController;
+use App\Http\Controllers\Api\BrandController as ApiBrandController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
@@ -74,7 +75,7 @@ Route::middleware('auth:sanctum')->prefix('order')->name('order.')->controller(O
 });
 
 Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
-Route::get('brands', [BrandController::class, 'getAllBrands'])->name('brands');
+Route::get('brands', [ApiBrandController::class, 'index'])->name('brands');
 
 Route::middleware('auth:sanctum')->controller(WishlistController::class)->group(function () {
     Route::post('/wishlist', 'addToWishlist');

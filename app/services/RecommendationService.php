@@ -77,7 +77,7 @@ class RecommendationService
         return array_map(fn($i) => $this->productData[$i], $topIndices);
     }
 
-    private function cosineSimilarity($vec1,$vec2)
+    private function cosineSimilarity(array $vec1, array $vec2)
     {
         $dot = 0.0;
         $normA = 0.0;
