@@ -14,8 +14,8 @@ class RecommendationService
     public function __construct()
     {
         $this->apiConfig = [
-            'getAllProducts' => env('API_PRODUCTS_URL', 'https://beige-alligator-527710.hostingersite.com/public/api/products'),
-            'getAllCategories' => env('API_CATEGORIES_URL', 'https://beige-alligator-527710.hostingersite.com/public/api/categories/get-categories'),
+            'getAllProducts' => env('API_PRODUCTS_URL', 'http://127.0.0.1:8000/api/products'),
+            'getAllCategories' => env('API_CATEGORIES_URL', 'http://127.0.0.1:8000/api/categories/get-categories'),
         ];
     }
 

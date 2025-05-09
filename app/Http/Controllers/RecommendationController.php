@@ -51,6 +51,7 @@ class RecommendationController extends Controller
             }
         });
 
+        Log::info('Products loaded:', $this->products->toArray());
         $this->buildTfidf();
     }
 
@@ -107,6 +108,11 @@ class RecommendationController extends Controller
         $query = strtolower($request->query('query', ''));
         $queryWords = collect(str_word_count($query, 1));
         $vocabulary = collect($this->tfidf[0] ?? [])->keys();
+
+        if ($this->products->isEmpty() || empty($this->tfidf)) {
+            Log::warning('No products or TF-IDF data available for search');
+            return response()->json([], 200);
+        }
 
         $queryVec = [];
         foreach ($vocabulary as $word) {
