@@ -20,9 +20,10 @@ class CartItemResource extends JsonResource
                 'id' => $this->product_id,
                 'name' => $this->product_name,
                 'price' => $this->product_price,
+                'image' => url($this->product_image),
             ],
             'quantity' => $this->quantity,
-            'total' => $this->product_price * $this->quantity,  
+            'total' => $this->product_price * $this->quantity,
             'brand'      => $this->relationLoaded('brand') && !($this->brand->count() == 0) ? new BrandResource($this->brand) : null,
         ];
     }

@@ -19,6 +19,7 @@ return new class extends Migration
 
             $table->string('product_name');
             $table->decimal('product_price', 10, 2);
+            $table->string('product_image');
             $table->decimal('total_price', 10, 2);
             $table->unsignedInteger('quantity');
 
