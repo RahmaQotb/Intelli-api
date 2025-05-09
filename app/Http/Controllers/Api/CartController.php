@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
@@ -50,7 +51,7 @@ class CartController extends Controller
                 'total_price' => $request->quantity * $product->total_price,
                 'brand_id' => $product->brand_id
             ]
-        );
+        )->load('brand');
 
         return response()->json([
             'status' => true,
@@ -75,7 +76,6 @@ class CartController extends Controller
 
         $user = $request->user();
         $cart = Cart::where('user_id', $user->id)->first();
-
         if (!$cart) {
             return response()->json(['status' => false, 'message' => 'Cart not found.'], 404);
         }
@@ -110,7 +110,7 @@ class CartController extends Controller
 
     public function getCart(Request $request)
     {
-        $user = $request->user;
+        $user = $request->user();
         $cart = Cart::where('user_id', $user->id)->with('cartItems')->first();
 
         if (!$cart) {
