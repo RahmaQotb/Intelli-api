@@ -65,3 +65,6 @@ Route::as('dashboard.')->group(function () {
         Route::post('change-password', 'changePassword')->name('change_password');
     });
 });
+  Route::get('/test-web', function () {
+      return 'Web route working';
+  });

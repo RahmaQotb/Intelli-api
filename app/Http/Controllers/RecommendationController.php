@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use App\Models\Category;
-use App\Models\Product;
 
 class RecommendationController extends Controller
 {
@@ -24,34 +23,43 @@ class RecommendationController extends Controller
     {
         $this->categories = Cache::remember('categories', 3600, function () {
             try {
-                return Category::all()->pluck('name', 'id');
-            } catch (\Exception $e) {
-                Log::error('Failed to fetch categories from database: ' . $e->getMessage());
+                $res = Http::timeout(10)->get(env('API_CATEGORIES_URL', 'http://127.0.0.1:8000/api/categories/get-categories'));
+                if ($res->successful()) {
+                    return collect($res['data'])->pluck('name', 'id');
+                }
+                Log::warning('Categories API returned non-200 status: ' . $res->status());
+                return collect([]);
+            } catch (\Illuminate\Http\Client\RequestException $e) {
+                Log::error('Failed to fetch categories: ' . $e->getMessage());
                 return collect([]);
             }
         });
-
+    
         $this->products = Cache::remember('products', 3600, function () {
             $categories = $this->categories;
             try {
-                return Product::with(['category', 'brand', 'subCategory'])->get()->map(function ($item) use ($categories) {
-                    $item['category'] = $categories[$item['category_id']] ?? 'Uncategorized';
-                    $item['content'] = Str::lower(
-                        ($item['name'] ?? '') . ' ' .
-                        ($item['description'] ?? '') . ' ' .
-                        ($item['brand']['name'] ?? '') . ' ' .
-                        ($item['category'] ?? '') . ' ' .
-                        json_encode($item['features'] ?? [])
-                    );
-                    return $item;
-                });
-            } catch (\Exception $e) {
-                Log::error('Failed to fetch products from database: ' . $e->getMessage());
+                $res = Http::timeout(10)->get(env('API_PRODUCTS_URL', 'http://127.0.0.1:8000/api/products'));
+                if ($res->successful()) {
+                    return collect($res['data'])->map(function ($item) use ($categories) {
+                        $item['category'] = $categories[$item['category_id']] ?? 'Uncategorized';
+                        $item['content'] = Str::lower(
+                            ($item['name'] ?? '') . ' ' .
+                            ($item['description'] ?? '') . ' ' .
+                            ($item['brand']['name'] ?? '') . ' ' .
+                            ($item['category'] ?? '') . ' ' .
+                            json_encode($item['features'] ?? [])
+                        );
+                        return $item;
+                    });
+                }
+                Log::warning('Products API returned non-200 status: ' . $res->status());
+                return collect([]);
+            } catch (\Illuminate\Http\Client\RequestException $e) {
+                Log::error('Failed to fetch products: ' . $e->getMessage());
                 return collect([]);
             }
         });
-
-        Log::info('Products loaded:', $this->products->toArray());
+    
         $this->buildTfidf();
     }
 
@@ -80,8 +88,6 @@ class RecommendationController extends Controller
                 $this->tfidf[$docIndex][$word] = $tf * $idf;
             }
         }
-
-        Log::info('TF-IDF matrix built:', ['tfidf' => $this->tfidf]);
     }
 
     private function cosineSimilarity($vec1, $vec2)
@@ -108,11 +114,6 @@ class RecommendationController extends Controller
         $query = strtolower($request->query('query', ''));
         $queryWords = collect(str_word_count($query, 1));
         $vocabulary = collect($this->tfidf[0] ?? [])->keys();
-
-        if ($this->products->isEmpty() || empty($this->tfidf)) {
-            Log::warning('No products or TF-IDF data available for search');
-            return response()->json([], 200);
-        }
 
         $queryVec = [];
         foreach ($vocabulary as $word) {

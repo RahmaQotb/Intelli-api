@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ProductRecommendationController;
 use App\Http\Controllers\Dashboard\BrandController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\Api\WishlistController;
@@ -22,6 +23,12 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/search', [ProductRecommendationController::class, 'searchProducts']);
+    Route::get('/recommendations-for-product', [ProductRecommendationController::class, 'getRecommendationsForProduct']);
+    Route::get('/all-recommendations', [ProductRecommendationController::class, 'getAllRecommendations']);
+});
 
 Route::prefix('auth')->name('auth.')->controller(AuthController::class)->group(function () {
     Route::post("register", "register")->name('register');
@@ -73,9 +80,4 @@ Route::middleware('auth:sanctum')->controller(WishlistController::class)->group(
     Route::post('/wishlist', 'addToWishlist');
     Route::delete('/wishlist', 'removeFromWishlist');
     Route::get('/wishlist', 'getWishlist');
-});
-
-Route::prefix('recommend')->group(function () {
-    Route::get('/search', [RecommendationController::class, 'search']);
-    Route::get('/similar/{id}', [RecommendationController::class, 'similar']);
 });

@@ -29,7 +29,7 @@ class ProductResource extends JsonResource
             'brand'      => $this->relationLoaded('brand') && !($this->brand->count() == 0) ? new BrandResource($this->brand) : null,
             'category'   =>   new CategoryResource($this->category),
             // 'sub_category' =>  new SubCategoryResource($this->subCategory) ?? null,
-            'created_at' => $this->created_at->format('l, d M Y'),
+            'created_at' => $this->created_at,
         ];
     }
 }
