@@ -78,6 +78,6 @@ Route::get('brands', [BrandController::class, 'getAllBrands'])->name('brands');
 
 Route::middleware('auth:sanctum')->controller(WishlistController::class)->group(function () {
     Route::post('/wishlist', 'addToWishlist');
-    Route::delete('/wishlist', 'removeFromWishlist');
+    Route::delete('/wishlist/{product_id}', 'removeFromWishlist');
     Route::get('/wishlist', 'getWishlist');
 });
