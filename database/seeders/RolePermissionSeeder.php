@@ -14,8 +14,6 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-
-        // Admin guard permissions
         $adminPermissions = [
             'manage_admins',
             'approve_brands',
@@ -27,68 +25,38 @@ class RolePermissionSeeder extends Seeder
             'manage_orders',
             'manage_notifications',
         ];
-
-        // Brand admin guard permissions
         $brandAdminPermissions = [
             'manage_brand_admins',
             'manage_notifications',
-            'manage_products',
-            'manage_categories',
-            'manage_sub_categories',
-            'manage_orders',
+            'manage_my_products',
+            'manage_my_orders',
         ];
-
-        // Create permissions with the correct guard
         foreach ($adminPermissions as $permission) {
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'admin']);
         }
-
         foreach ($brandAdminPermissions as $permission) {
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'brand_admin']);
         }
-
-        // Create roles with appropriate guards
         $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'admin']);
         $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'admin']);
         $brandOwner = Role::firstOrCreate(['name' => 'brand_owner', 'guard_name' => 'brand_admin']);
         $brandAdmin = Role::firstOrCreate(['name' => 'brand_admin', 'guard_name' => 'brand_admin']);
-
-        // Assign permissions to roles with the same guard
-        $superAdmin->syncPermissions([
-            'manage_admins',
-            'approve_brands',
-            'delete_brands',
-            'manage_brand_admins',
-            'manage_products',
-            'manage_categories',
-            'manage_sub_categories',
-            'manage_orders',
-            'manage_notifications',
-        ]);
-
-        $admin->syncPermissions([
-            'approve_brands',
-            'delete_brands',
-        ]);
-
-        $brandOwner->syncPermissions([
-            'manage_brand_admins',
-            'manage_notifications',
-            'manage_products',
-            'manage_categories',
-            'manage_sub_categories',
-            'manage_orders',
-        ]);
-
-        $brandAdmin->syncPermissions([
-            'manage_notifications',
-            'manage_products',
-            'manage_categories',
-            'manage_sub_categories',
-            'manage_orders',
-        ]);
-
-        // Create admin users
+        $superAdminGuardPermissions = Permission::where('guard_name', 'admin')->whereIn('name', [
+            'manage_admins','approve_brands','delete_brands','manage_brand_admins','manage_products','manage_categories','manage_sub_categories','manage_orders','manage_notifications',
+        ])->get();
+        $superAdmin->syncPermissions($superAdminGuardPermissions);
+        $adminGuardPermissions = Permission::where('guard_name', 'admin')->whereIn('name', [
+            'approve_brands','delete_brands',
+        ])->get();
+        $admin->syncPermissions($adminGuardPermissions);
+        $brandOwnerGuardPermissions = Permission::where('guard_name', 'brand_admin')->whereIn('name', [
+            'manage_brand_admins','manage_notifications','manage_my_products','manage_my_orders',
+        ])->get();
+        $brandOwner->syncPermissions($brandOwnerGuardPermissions);
+        $brandAdminGuardPermissions = Permission::where('guard_name', 'brand_admin')->whereIn('name', [
+            'manage_notifications','manage_my_products','manage_my_orders',
+        ])->get();
+        $brandAdmin->syncPermissions($brandAdminGuardPermissions);
         $superAdminUser = Admin::firstOrCreate(
             ['email' => 'super@admin.com'],
             ['name' => 'Super Admin', 'password' => Hash::make('password'), 'is_super_admin' => 1]
@@ -97,8 +65,6 @@ class RolePermissionSeeder extends Seeder
             ['email' => 'admin@admin.com'],
             ['name' => 'Admin', 'password' => Hash::make('password'), 'is_super_admin' => 0]
         );
-
-        // Create brand admin users
         $brandOwnerUser = BrandAdmin::firstOrCreate(
             ['email' => 'owner@brand.com'],
             ['name' => 'Brand Owner', 'password' => Hash::make('password'), 'is_super_brand_admin' => 1, 'brand_id' => 1]
@@ -107,8 +73,6 @@ class RolePermissionSeeder extends Seeder
             ['email' => 'brand@admin.com'],
             ['name' => 'Brand Admin', 'password' => Hash::make('password'), 'is_super_brand_admin' => 0, 'brand_id' => 1]
         );
-
-        // Assign roles to users
         $superAdminUser->assignRole($superAdmin);
         $adminUser->assignRole($admin);
         $brandOwnerUser->assignRole($brandOwner);

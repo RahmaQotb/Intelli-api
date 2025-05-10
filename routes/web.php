@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\Auth\AuthController;
 use App\Http\Controllers\Dashboard\BrandAdminController;
 use App\Http\Controllers\Dashboard\BrandController;
 use App\Http\Controllers\Dashboard\CategoryController;
@@ -28,6 +29,18 @@ Route::get('/', function () {
 });
 
 Route::as('dashboard.')->group(function () {
+
+    Route::controller(AuthController::class)->as('auth.')->group(function(){
+            Route::middleware('guest')->group(function(){
+                Route::get('login',"getLogin")->name('login_form');
+                Route::post('login',"login")->name('login');
+            });
+        // Route::middleware('is_admin')->group(function(){
+
+        // });
+    });
+
+
     Route::get('/index', function () {
         $categories = Category::count();
         $sub_categories = SubCategory::count();
@@ -57,7 +70,7 @@ Route::as('dashboard.')->group(function () {
         Route::resource('brands', BrandController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
         Route::get('brands/{brand}/admin/create', [BrandController::class, 'createAdmin'])->name('brands.admin.create');
         Route::post('brands/{brand}/admin', [BrandController::class, 'storeAdmin'])->name('brands.admin.store');
-        
+
     Route::controller(AdminController::class)->as('admin.')->group(function () {
         Route::get('add-admin', 'create')->name('create');
         Route::post('add_admin', 'add')->name('add');
