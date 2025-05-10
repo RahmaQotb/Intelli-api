@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class WishlistController extends Controller
 {
@@ -19,13 +20,19 @@ class WishlistController extends Controller
      */
     public function addToWishlist(Request $request)
     {
-        $request->validate([
+        $validated = Validator::make($request->all(),[
             'product_id' => 'required|exists:products,id',
         ]);
+        if($validated->fails()){
+            return response()->json([
+                'status'=>false,
+                'message' => 'The product not exist'
+            ], 404);
+        }
+        $userId = $request->user();
 
-        $userId = Auth::id();  
 
-        $existingWishlist = Wishlist::where('user_id', $userId)
+        $existingWishlist = Wishlist::where('user_id', $userId->id)
             ->where('product_id', $request->product_id)
             ->first();
 
@@ -35,22 +42,24 @@ class WishlistController extends Controller
             ], 400);
         }
 
-        Wishlist::create([
-            'user_id' => $userId,
+        $wishlistItem = Wishlist::create([
+            'user_id' => $userId->id,
             'product_id' => $request->product_id
-        ]);
+        ])->load('product');
 
         return response()->json([
-            'message' => 'Product added to wishlist successfully.'
+            'message' => 'Product added to wishlist successfully.',
+            'data'=>new WishlistResource($wishlistItem)
         ], 200);
     }
 
- 
+
    public function removeFromWishlist($product_id)
 {
-    $userId = Auth::id();  
+    $userId = request()->user();
 
-    $wishlistItem = Wishlist::where('user_id', $userId)
+
+    $wishlistItem = Wishlist::where('user_id', $userId->id)
         ->where('product_id', $product_id)
         ->first();
 
@@ -70,12 +79,24 @@ class WishlistController extends Controller
 
     public function getWishlist()
     {
-        $userId = Auth::id();
+            $userId = request()->user();
 
-        $wishlistItems = Wishlist::with('product')->where('user_id', $userId)->get();
+        $wishlistItems = Wishlist::with('product')->where('user_id', $userId->id)->get();
 
-        return WishlistResource::collection($wishlistItems);
+
+        if ($wishlistItems->isEmpty()) {
+            return response()->json([
+                'status'=>false,
+                'message' => 'Products not found in your wishlist.'
+            ], 404);
+        }
+
+        return response()->json([
+                'status'=>true,
+                'message' => 'Products retrived successfully.',
+                'data'=>WishlistResource::collection($wishlistItems)
+        ]);
     }
 }
-        
+
 
