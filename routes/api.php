@@ -66,14 +66,16 @@ Route::middleware('auth:sanctum')->prefix('cart')->name('cart.')->controller(Car
     Route::delete('delete', 'deleteCart')->name('delete');
     Route::get('/', 'getCart')->name('get');
 });
-
-Route::middleware('auth:sanctum')->prefix('order')->name('order.')->controller(OrderController::class)->group(function () {
-    Route::post('checkout', 'checkout')->name('checkout');
-    Route::get('orders/{order}', 'show')->name('show');
-    Route::get('orders', 'index')->name('index');
-    Route::post('orders/{order}/cancel', 'cancel');
-});
-
+Route::middleware('auth:sanctum')
+    ->prefix('order')
+    ->name('order.')
+    ->controller(OrderController::class)
+    ->group(function () {
+        Route::post('checkout', 'checkout')->name('checkout');
+        Route::post('{order}/cancel', 'cancel')->whereNumber('order')->name('cancel');
+        Route::get('', 'index')->name('index');
+        Route::get('{order}', 'show')->whereNumber('order')->name('show');
+    });
 Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
 Route::get('brands', [ApiBrandController::class, 'index'])->name('brands');
 
