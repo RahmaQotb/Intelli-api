@@ -46,7 +46,7 @@ class OrderController extends Controller
         }
 
         $cart = Cart::with('cartItems')->where('user_id', $user->id)->first();
-        if (!$cart || $cart->items->isEmpty()) {
+        if (!$cart || $cart->cartItems->isEmpty()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Cart is empty.',
@@ -85,14 +85,16 @@ class OrderController extends Controller
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
                     'product_name' => $item->product_name,
+                    'product_image' => $item->product_image,
                     'product_price' => $item->product_price,
+                    'total_price' => $item->product_price *$item->quantity,
                     'quantity' => $item->quantity,
                     'brand_id' => $item->brand_id,
                 ]);
             }
 
             // حذف كل عناصر السلة
-            $cart->items()->delete();
+            $cart->cartItems()->delete();
             $cart->delete();
 
             DB::commit();
@@ -113,7 +115,7 @@ class OrderController extends Controller
     }
 
     public function show($order){
-     
+
         $order = Order::find($order);
         if(!$order){
             return response()->json([
@@ -161,21 +163,21 @@ class OrderController extends Controller
 {
     $user =  request()->user();
 
-    $order = Order::where('user_id',$user->id)
+    $order = Order::where('user_id',$user->id)->where('id',$id)
     ->first();
 
     if(!$order){
         return response()->json([
             'status'=>false,
-            'message'=>'No Order For this user',
+            'message'=>'Order Not Found',
         ],400);
     }
 
-    if ($order->user_id !== $user->id) {
+    if ($order->status == 'deliverd') {
         return response()->json([
             'status' => false,
-            'message' => "Order don't belong to this user",
-        ], 403);
+            'message' => 'Order already deliverd.',
+        ], 422);
     }
 
     if ($order->status !== 'pending') {
@@ -184,6 +186,8 @@ class OrderController extends Controller
             'message' => 'Cannot cancel a processed order.',
         ], 422);
     }
+
+
 
     $order->status = 'cancelled';
     $order->save();
