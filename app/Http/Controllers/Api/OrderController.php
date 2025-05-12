@@ -9,7 +9,8 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\OrderDetails;
 use App\Models\OrderItem;
-use App\Models\OrderItems;
+// use App\Models\OrderItems;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -79,7 +80,7 @@ class OrderController extends Controller
                 'address_two' => $request->address_two,
                 'postal_code' => $request->postal_code,
             ]);
-
+            $productsOrderd = [];
             foreach ($cart->cartItems as $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -91,9 +92,18 @@ class OrderController extends Controller
                     'quantity' => $item->quantity,
                     'brand_id' => $item->brand_id,
                 ]);
+                array_push($productsOrderd,[
+                    'id'=>$item->product_id,
+                    'quantity'=>$item->quantity
+                ]);
             }
 
-            // حذف كل عناصر السلة
+            foreach($productsOrderd as $productOrderd){
+                $product = Product::where('id',$productOrderd['id'])->first();
+                $product->update([
+                    'quantity'=>$product->quantity - $productOrderd['quantity']
+                ]);
+            }
             $cart->cartItems()->delete();
             $cart->delete();
 
@@ -188,6 +198,31 @@ class OrderController extends Controller
     }
 
 
+    $orderItems = OrderItem::where('order_id',$order->id)->get();
+    $productsCancelled = [];
+    foreach($orderItems as $orderItem){
+        array_push($productsCancelled , [
+            'id'=>$orderItem->product_id,
+            'quantity'=>$orderItem->quantity,
+        ]);
+    }
+    DB::beginTransaction();
+    try{
+        foreach($productsCancelled as $productCancelled){
+                    $product = Product::where('id',$productCancelled['id'])->first();
+                    $product->update([
+                        'quantity'=>$product->quantity + $productCancelled['quantity']
+                    ]);
+        }
+        DB::commit();
+    }catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong.',
+                'error' => $e->getMessage()
+            ], 500);
+    }
 
     $order->status = 'cancelled';
     $order->save();
