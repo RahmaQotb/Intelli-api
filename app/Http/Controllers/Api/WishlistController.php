@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\WishlistResource;
 use App\Models\Product;
 use App\Models\Wishlist;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -96,6 +97,32 @@ class WishlistController extends Controller
                 'message' => 'Products retrived successfully.',
                 'data'=>WishlistResource::collection($wishlistItems)
         ]);
+    }
+
+    public function clearWishlist(Request $request){
+        $userId = request()->user();
+        try{
+            $itemsExisting = Wishlist::where('user_id', $userId->id)->exists();
+            if(!$itemsExisting){
+                return response()->json([
+                'status'=>false,
+                'message' => 'No Products Exist in Wishlist',
+                ],404);
+            }
+            $wishlistItems = Wishlist::where('user_id', $userId->id)->delete();
+            return response()->json([
+                'status'=>true,
+                'message' => 'Wishlist Cleared successfully',
+        ]);
+        }catch(Exception $e){
+            return response()->json([
+                'status'=>false,
+                'message' => $e->getMessage(),
+        ]);
+        }
+
+
+
     }
 }
 

@@ -82,5 +82,6 @@ Route::get('brands', [ApiBrandController::class, 'index'])->name('brands');
 Route::middleware('auth:sanctum')->controller(WishlistController::class)->group(function () {
     Route::post('/wishlist', 'addToWishlist');
     Route::delete('/wishlist/{product_id}', 'removeFromWishlist');
+    Route::delete('/wishlist', 'clearWishlist');
     Route::get('/wishlist', 'getWishlist');
 });
