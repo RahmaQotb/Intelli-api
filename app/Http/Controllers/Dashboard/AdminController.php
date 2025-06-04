@@ -42,16 +42,16 @@ class AdminController extends Controller
             'old_password' => ['required'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
-    
-        $admin = Auth::user();
+        $guard = get_current_guard();
+        $admin = Auth::guard($guard)->user();
 
         if (!Hash::check($request->old_password, $admin->password)) {
             return back()->with('fails' , 'The old password is incorrect.');
         }
-    
+
         $admin->password = Hash::make($request->password);
         $admin->save();
-    
+
         return back()->with('success', 'Password changed successfully.');
     }
 }

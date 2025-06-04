@@ -25,25 +25,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
-    return redirect()->route('dashboard.index');
-});
-
-Route::as('dashboard.')->group(function () {
-
-    Route::controller(AuthController::class)->as('auth.')->group(function(){
-            Route::middleware('guest')->group(function(){
-                Route::get('login',"getLogin")->name('login_form');
-                Route::post('login',"login")->name('login');
-            });
-            Route::post('logout',"logout")->name('logout');
-        // Route::middleware('is_admin')->group(function(){
-
-        // });
-    });
-
-
-    Route::get('/index', function () {
-        $categories = Category::count();
+    $categories = Category::count();
         $sub_categories = SubCategory::count();
         $products = Product::count();
         $model_counts = [
@@ -52,6 +34,23 @@ Route::as('dashboard.')->group(function () {
             "products" => $products
         ];
         return view('Dashboard.index', compact("model_counts"));
+    // return redirect()->route('dashboard.index');
+})->name('index')->middleware('authenticated');
+
+Route::as('dashboard.')->group(function () {
+
+    Route::controller(AuthController::class)->as('auth.')->group(function(){
+            Route::middleware('guest')->group(function(){
+                Route::get('login',"getLogin")->name('login_form');
+                Route::post('login',"login")->name('login');
+            });
+            Route::post('logout',"logout")->name('logout')->middleware('authenticated');
+    });
+
+Route::middleware('authenticated')->group(function(){
+
+    Route::get('/index', function () {
+        return redirect()->route('index');
     })->name('index');
 
     // categoreis
@@ -79,6 +78,4 @@ Route::as('dashboard.')->group(function () {
         Route::post('change-password', 'changePassword')->name('change_password');
     });
 });
-  Route::get('/test-web', function () {
-      return 'Web route working';
-  });
+});

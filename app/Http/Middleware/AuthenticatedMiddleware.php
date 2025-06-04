@@ -2,13 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
+use App\Providers\RouteServiceProvider;
 
-class RedirectIfAuthenticated
+class AuthenticatedMiddleware
 {
     /**
      * Handle an incoming request.
@@ -19,11 +19,11 @@ class RedirectIfAuthenticated
     {
         $guard = get_current_guard();
 
-        if (!Auth::guard($guard)->check()) {
+        if (Auth::guard($guard)->check()) {
             return $next($request);
         }
-        
-        return redirect(RouteServiceProvider::HOME);
+
+        return redirect()->route('dashboard.auth.login_form');
 
     }
 }
