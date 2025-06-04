@@ -23,6 +23,18 @@
 
 
         </li>
+
+        <li
+            class="sidebar-item  ">
+            <a href="{{route("dashboard.brands.admin.create")}}" class='sidebar-link'>
+                <i class="">
+                    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+                </i>
+                <span>Add Brand Admin</span>
+            </a>
+
+
+        </li>
         <li
             class="sidebar-item  ">
             <a href="{{route("dashboard.admin.change_password_form")}}" class='sidebar-link'>
@@ -51,12 +63,12 @@
                 </i>
                 <span>Categories</span>
             </a>
-        
+
             <ul class="submenu">
                 <li class="submenu-item">
                     <a href="{{route('dashboard.categories.index')}}" class="submenu-link">Show All Categories</a>
                 </li>
-        
+
                 <li class="submenu-item">
                     <a href="{{route('dashboard.categories.create')}}" class="submenu-link">Add Category</a>
                 </li>
@@ -67,7 +79,7 @@
                         </i>
                         <span style="font-size: 16px; font-weight: bold;">Sub Categories</span>
                     </a>
-                
+
                     <ul class="submenu">
                         <li class="submenu-item">
                             <a href="{{route('dashboard.sub_categories.index')}}" class="submenu-link">Show All Sub Categories</a>
@@ -77,10 +89,10 @@
                         </li>
                     </ul>
                 </li>
-                
+
             </ul>
         </li>
-        
+
     <li
     class="sidebar-item  has-sub">
     <a href="#" class='sidebar-link'>
@@ -127,12 +139,12 @@
             <a href="{{route("dashboard.brands.create")}}" class="submenu-link">Add Brand </a>
 
         </li>
-        
+
     </ul>
 
 
 </li>
-      @auth
+      
         <li class="sidebar-item  ">
 
             <form action="{{route('dashboard.auth.logout')}}" method="post">
@@ -151,7 +163,7 @@
 
 
         </li>
-        @endauth
+
 
 </div>
 </div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\BrandAdmin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -54,7 +55,7 @@ class BrandController extends Controller
                 'description' => $validated['description'],
                 'logo' => $logoPath,
                 'cover' => $coverPath,
-                'organization_license' => encrypt($validated['organization_license']), 
+                'organization_license' => encrypt($validated['organization_license']),
                 'commercial_registry_extract' => encrypt($validated['commercial_registry_extract']),
                 'tax_registry' => encrypt($validated['tax_registry']),
             ]);
@@ -69,35 +70,39 @@ class BrandController extends Controller
     /**
      * Show the form for creating a brand admin.
      */
-    public function createAdmin(Brand $brand)
+    public function createAdmin()
     {
+        $brand_admin = Auth::guard('brand_admin')->user();
+        $brand = Brand::find($brand_admin->brand_id);
         return view('Dashboard.Brand.BrandAdmin.create', compact('brand'));
     }
 
     /**
      * Store a newly created brand admin in storage.
      */
-    public function storeAdmin(Request $request, Brand $brand)
+    public function storeAdmin(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|unique:brand_admins,name|max:255',
             'email' => 'required|email|unique:brand_admins,email|max:255',
-            'password' => 'required|min:6|confirmed',
-            'is_super_brand_admin' => 'nullable|boolean',
+            'password' => 'required|min:8|confirmed',
+            'is_super_brand_admin' => 'required|boolean',
         ]);
 
         try {
-            DB::transaction(function () use ($validated, $brand, $request) {
+        $brand_admin = Auth::guard('brand_admin')->user();
+        // dd($brand_admin);
+        $brand = $brand_admin->brand_id;
+
                 BrandAdmin::create([
                     'name' => $validated['name'],
                     'email' => $validated['email'],
                     'password' => Hash::make($validated['password']),
-                    'brand_id' => $brand->id,
+                    'brand_id' => $brand,
                     'is_super' => $request->boolean('is_super_brand_admin'),
                 ]);
-            });
 
-            return redirect()->route('dashboard.brands.show', $brand)
+            return redirect()->route('dashboard.brands.admin.create', $brand)
                 ->with('success', 'Admin assigned to brand.');
         } catch (\Exception $e) {
             return back()->withInput()->withErrors(['error' => 'Failed to assign admin.']);

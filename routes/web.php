@@ -35,6 +35,7 @@ Route::as('dashboard.')->group(function () {
                 Route::get('login',"getLogin")->name('login_form');
                 Route::post('login',"login")->name('login');
             });
+            Route::post('logout',"logout")->name('logout');
         // Route::middleware('is_admin')->group(function(){
 
         // });
@@ -68,8 +69,8 @@ Route::as('dashboard.')->group(function () {
 
     //Brand
         Route::resource('brands', BrandController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
-        Route::get('brands/{brand}/admin/create', [BrandController::class, 'createAdmin'])->name('brands.admin.create');
-        Route::post('brands/{brand}/admin', [BrandController::class, 'storeAdmin'])->name('brands.admin.store');
+        Route::get('brands/admin/create', [BrandController::class, 'createAdmin'])->name('brands.admin.create');
+        Route::post('brands/admin', [BrandController::class, 'storeAdmin'])->name('brands.admin.store');
 
     Route::controller(AdminController::class)->as('admin.')->group(function () {
         Route::get('add-admin', 'create')->name('create');
