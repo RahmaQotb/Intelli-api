@@ -23,7 +23,7 @@
 
 
         </li>
-
+@can('manage_brand_admins')
         <li
             class="sidebar-item  ">
             <a href="{{route("dashboard.brands.admin.create")}}" class='sidebar-link'>
@@ -35,6 +35,7 @@
 
 
         </li>
+        @endcan
         <li
             class="sidebar-item  ">
             <a href="{{route("dashboard.admin.change_password_form")}}" class='sidebar-link'>

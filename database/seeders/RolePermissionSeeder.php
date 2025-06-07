@@ -18,7 +18,7 @@ class RolePermissionSeeder extends Seeder
             'manage_admins',
             'approve_brands',
             'delete_brands',
-            'manage_brand_admins',
+            // 'manage_brand_admins',
             'manage_products',
             'manage_categories',
             'manage_sub_categories',
