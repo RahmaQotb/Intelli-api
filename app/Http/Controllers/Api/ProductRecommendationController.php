@@ -9,22 +9,12 @@ use App\Models\SearchHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Traits\HasProductRecommendations;
 
 class ProductRecommendationController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+    use HasProductRecommendations;
 
-
-    /**
-     * Search for products based on query
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function searchProducts(Request $request)
     {
         try {
@@ -37,7 +27,6 @@ class ProductRecommendationController extends Controller
 
             $searchedProducts = Product::where('name', 'like', "%{$searchQuery}%")
                 ->orWhere('description', 'like', "%{$searchQuery}%")
-                ->where('status', 'active')
                 ->get();
 
             if (!$searchedProducts->isEmpty()) {
@@ -62,7 +51,6 @@ class ProductRecommendationController extends Controller
                 'message' => 'Products retrieved successfully',
                 'data' => ProductResource::collection($searchedProducts)
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Search error: ' . $e->getMessage());
             return response()->json([
@@ -73,12 +61,6 @@ class ProductRecommendationController extends Controller
         }
     }
 
-    /**
-     * Get recommendations for a specific product (same category)
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function getRecommendationsForProduct(Request $request)
     {
         try {
@@ -96,20 +78,13 @@ class ProductRecommendationController extends Controller
                 ->limit(10)
                 ->get();
 
-            if ($recommendedProducts->isEmpty()) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'No recommendations found for this product',
-                    'data' => []
-                ], 200);
-            }
-
             return response()->json([
                 'status' => 'success',
-                'message' => 'Recommendations for product retrieved successfully',
+                'message' => $recommendedProducts->isEmpty() ?
+                    'No recommendations found for this product' :
+                    'Recommendations retrieved successfully',
                 'data' => ProductResource::collection($recommendedProducts)
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Product recommendation error: ' . $e->getMessage());
             return response()->json([
@@ -120,54 +95,46 @@ class ProductRecommendationController extends Controller
         }
     }
 
-    /**
-     * Get all personalized recommendations for the user
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function getAllRecommendations(Request $request)
     {
         try {
             $user = Auth::user();
 
-            $frequentCategoryIds = SearchHistory::where('user_id', $user->id)
-                ->groupBy('category_id')
-                ->select('category_id')
-                ->orderByRaw('COUNT(*) DESC')
-                ->pluck('category_id')
-                ->take(3);
+            $wishlistProducts = $this->getWishlistProducts($user);
+            $wishlistCategoryIds = $this->getTopCategoriesFromProducts($wishlistProducts);
 
-            $recommendedProducts = collect();
-            if ($frequentCategoryIds->isNotEmpty()) {
-                $recommendedProducts = Product::whereIn('category_id', $frequentCategoryIds)
-                    ->where('status', 'active')
-                    ->inRandomOrder()
-                    ->limit(10)
-                    ->get();
-            } else {
-                $recommendedProducts = Product::where('status', 'active')
-                    ->inRandomOrder()
-                    ->limit(10)
-                    ->get();
-            }
+            $searchedProducts = $this->getSearchHistoryProducts($user);
+            $searchCategoryIds = $this->getTopCategoriesFromProducts($searchedProducts);
 
-            if ($recommendedProducts->isEmpty()) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'No recommendations available',
-                    'data' => []
-                ], 200);
-            }
+            // dd([
+            //     'wishlistCategoryIds' => $wishlistCategoryIds,
+            //     'searchCategoryIds' => $searchCategoryIds,
+            // ]);
+
+
+            $combinedCategoryIds = $wishlistCategoryIds
+                ->merge($searchCategoryIds)
+                ->unique();
+            // dd($combinedCategoryIds);
+            $excludedProducts = $wishlistProducts
+                ->merge($searchedProducts)
+                ->unique('id');
+            // dd($excludedProducts->count());
+
+            $excludedProductIds = $excludedProducts->pluck('id');
+
+            $recommendedProducts = $this->getRecommendedProductsByCategoryIds($combinedCategoryIds, $excludedProductIds);
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'All personalized recommendations retrieved successfully',
+                'message' => $recommendedProducts->isEmpty()
+                    ? 'No recommendations available'
+                    : 'Recommendations retrieved successfully',
                 'data' => ProductResource::collection($recommendedProducts)
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('All recommendations error: ' . $e->getMessage());
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'An error occurred while fetching all recommendations',

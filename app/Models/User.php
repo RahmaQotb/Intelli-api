@@ -13,7 +13,6 @@ use App\Models\Wishlist;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable , HasRoles;
-    protected $guard_name = "web";
 
     /**
      * The attributes that are mass assignable.
@@ -63,5 +62,9 @@ class User extends Authenticatable
     public function wishlists(): HasMany
     {
         return $this->hasMany(Wishlist::class);
+    }
+    public function searchHistories()
+    {
+        return $this->hasMany(SearchHistory::class);
     }
 }
