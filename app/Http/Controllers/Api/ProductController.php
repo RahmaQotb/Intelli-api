@@ -13,7 +13,7 @@ use App\Http\Resources\ProductResource;
 class ProductController extends Controller
 {
     public function index(){
-        $products = Product::with('brand')->orderBy('created_at','desc')->paginate(10);
+        $products = Product::with('brand')->orderBy('created_at','desc')->get();
 
         if($products->count()== 0){
             return response()->json([
@@ -26,12 +26,12 @@ class ProductController extends Controller
         return response()->json([
                 "success"=>true,
                 "message"=>"Products Retrived Successfully",
-                "links" => [
+                /*"links" => [
                     'first' => $products->url(1),
                     'last' => $products->url($products->lastPage()),
                     'prev' => $products->previousPageUrl(),
                     'next' => $products->nextPageUrl()
-            ],
+            ],*/
                 "data"=> ProductResource::collection($products)
         ],200);
     }
@@ -65,7 +65,7 @@ class ProductController extends Controller
             ],404);
         }
 
-        $products = $category->products()->with('brand')->latest()->paginate(10);
+        $products = $category->products()->with('brand')->latest()->get();
 
         if($products->count() == 0){
             return response()->json([
@@ -78,12 +78,12 @@ class ProductController extends Controller
         return response()->json([
             "success"=>true,
             "message"=>"Products Retrived Successfully",
-            "links" => [
+            /*"links" => [
                 'first' => $products->url(1),
                 'last' => $products->url($products->lastPage()),
                 'prev' => $products->previousPageUrl(),
                 'next' => $products->nextPageUrl()  
-            ],
+            ],*/
             "data"=> ProductResource::collection($products),
     ],200);
     }
@@ -112,7 +112,8 @@ class ProductController extends Controller
             ],404);
         }
 
-        $products = $sub_category->products()->with('brand')->latest()->paginate(10);
+        $products = $sub_category->products()->with('brand')->latest()->get();
+
 
         if($products->count() == 0){
             return response()->json([
@@ -125,12 +126,12 @@ class ProductController extends Controller
         return response()->json([
             "success"=>true,
             "message"=>"Products Retrived Successfully",
-            "links" => [
+           /* "links" => [
                 'first' => $products->url(1),
                 'last' => $products->url($products->lastPage()),
                 'prev' => $products->previousPageUrl(),
                 'next' => $products->nextPageUrl()  
-            ],
+            ],*/
             "data"=> ProductResource::collection($products),
     ],200);
     }
@@ -146,7 +147,7 @@ class ProductController extends Controller
             ],404);
         }
 
-        $products = $Brand->products()->latest()->paginate(10);
+        $products = $Brand->products()->latest()->get();
 
         if($products->count() == 0){
             return response()->json([
@@ -159,12 +160,12 @@ class ProductController extends Controller
         return response()->json([
             "success"=>true,
             "message"=>"Products Retrived Successfully",
-            "links" => [
+            /*"links" => [
                 'first' => $products->url(1),
                 'last' => $products->url($products->lastPage()),
                 'prev' => $products->previousPageUrl(),
                 'next' => $products->nextPageUrl()  
-            ],
+            ],*/
             "data"=> ProductResource::collection($products),
     ],200);
     }
