@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 
 class BrandController extends Controller
 {
+ 
     /**
      * Display a listing of all brands.
      */
@@ -47,8 +48,8 @@ class BrandController extends Controller
 
         try {
             
-            $validated['logo'] = 'Uploads/' . $request->file('image')->storePublicly('Logos', 'public');
-            $validated['cover'] = 'Uploads/' . $request->file('image')->storePublicly('Covers', 'public');
+            $validated['logo'] = 'Uploads/' . $request->file('logo')->storePublicly('Logos', 'public');
+            $validated['cover'] = 'Uploads/' . $request->file('cover')->storePublicly('Covers', 'public');
 
             $brand = Brand::create([
                 'name' => $validated['brand_name'],
