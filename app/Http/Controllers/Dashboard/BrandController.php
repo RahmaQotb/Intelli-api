@@ -46,15 +46,16 @@ class BrandController extends Controller
         ]);
 
         try {
-            $logoPath = $request->file('logo')->store('Logos', 'public');
-            $coverPath = $request->file('cover')->store('Covers', 'public');
+            
+            $validated['logo'] = 'Uploads/' . $request->file('image')->storePublicly('Logos', 'public');
+            $validated['cover'] = 'Uploads/' . $request->file('image')->storePublicly('Covers', 'public');
 
             $brand = Brand::create([
                 'name' => $validated['brand_name'],
                 'slug' => Str::slug($validated['brand_name']),
                 'description' => $validated['description'],
-                'logo' => $logoPath,
-                'cover' => $coverPath,
+                'logo' => $validated['logo'],
+                'cover' => $validated['cover'],
                 'organization_license' => encrypt($validated['organization_license']),
                 'commercial_registry_extract' => encrypt($validated['commercial_registry_extract']),
                 'tax_registry' => encrypt($validated['tax_registry']),

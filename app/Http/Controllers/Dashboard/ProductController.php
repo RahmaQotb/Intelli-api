@@ -56,10 +56,7 @@ class ProductController extends Controller
     ]);
     // $validated['brand_id']=1;
 
-    $validated['slug'] = Str::slug($validated['name']);
-
-    $validated['image'] = 'Uploads/' . $request->file('image')->storePublicly('Products', 'public');
-
+   c
     if($request->filled('discount_in_percentage')){
         $validated['total_price'] = $validated['price'] - ($validated['price'] * ($validated['discount_in_percentage']/100));
     }else{
