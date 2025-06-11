@@ -46,7 +46,7 @@ class ProductController extends Controller
         'description' => 'nullable|string',
         'quantity' => 'required|integer|min:0',
         'category_id' => 'required|exists:categories,id',
-        // 'brand_id' => 'required|exists:brands,id',
+        'brand_id' => 'required|exists:brands,id',
         'sub_category_id' => 'nullable|exists:sub_categories,id',
         'image' => 'required|image|mimes:jpeg,png,jpg,webp',
         'price' => 'required|numeric|min:0',
@@ -54,7 +54,7 @@ class ProductController extends Controller
         'condition' => 'required|in:Default,New,Hot,Best Seller,Special Offer',
         'status' => 'required|in:active,archieved',
     ]);
-    $validated['brand_id']=1;
+    // $validated['brand_id']=1;
 
     $validated['slug'] = Str::slug($validated['name']);
 
